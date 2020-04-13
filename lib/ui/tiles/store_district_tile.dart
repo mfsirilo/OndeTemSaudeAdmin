@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
 
-class StoreSpecialtyTile extends StatelessWidget {
+class StoreDistrictTile extends StatelessWidget {
   final DocumentSnapshot document;
   final DocumentSnapshot store;
 
-  StoreSpecialtyTile(this.document, this.store);
+  StoreDistrictTile(this.document, this.store);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,9 @@ class StoreSpecialtyTile extends StatelessWidget {
             contentPadding: EdgeInsets.only(left: 16.0, right: 8.0),
             title: FutureBuilder<DocumentSnapshot>(
               future: Firestore.instance
-                  .collection("specialties")
+                  .collection("cities")
+                  .document(store.data["city"])
+                  .collection("districts")
                   .document(document["uid"])
                   .get(),
               builder: (context, snapshot) {
@@ -67,9 +69,9 @@ class StoreSpecialtyTile extends StatelessWidget {
               onPressed: () {
                 document.reference.delete();
                 Firestore.instance
-                    .collection("store_specialty")
+                    .collection("store_district")
                     .where(
-                      "specialty",
+                      "district",
                       isEqualTo: document.documentID,
                     )
                     .where("store", isEqualTo: store.documentID)

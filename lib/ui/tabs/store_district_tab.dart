@@ -1,36 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/store_specialty_list_bloc.dart';
-import 'package:onde_tem_saude_admin/ui/pages/store_specialty_page.dart';
-import 'package:onde_tem_saude_admin/ui/tiles/store_specialty_tile.dart';
+import 'package:onde_tem_saude_admin/blocs/store_district_list_bloc.dart';
+import 'package:onde_tem_saude_admin/ui/pages/store_district_page.dart';
+import 'package:onde_tem_saude_admin/ui/tiles/store_district_tile.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/loading_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/no_record_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/search_field.dart';
 
-class StoreSpecialtyTab extends StatefulWidget {
+class StoreDistrictTab extends StatefulWidget {
   final DocumentSnapshot store;
 
-  StoreSpecialtyTab({this.store});
+  StoreDistrictTab({this.store});
 
   @override
-  _StoreSpecialtyTabState createState() => _StoreSpecialtyTabState();
+  _StoreDistrictTabState createState() => _StoreDistrictTabState();
 }
 
-class _StoreSpecialtyTabState extends State<StoreSpecialtyTab> {
+class _StoreDistrictTabState extends State<StoreDistrictTab> {
   @override
   Widget build(BuildContext context) {
-    final _tableBloc = StoreSpecialtyListBloc(store: widget.store);
+    final _tableBloc = StoreDistrictListBloc(store: widget.store);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Vincular Especialidades"),
+        title: Text("Vincular Bairros"),
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showDialog(
               context: context,
-              builder: (context) => StoreSpecialtyPage(
+              builder: (context) => StoreDistrictPage(
                     store: widget.store,
                   ));
         },
@@ -59,7 +59,7 @@ class _StoreSpecialtyTabState extends State<StoreSpecialtyTab> {
           ),
           Expanded(
             child: StreamBuilder<List>(
-                stream: _tableBloc.outStoreSpecialty,
+                stream: _tableBloc.outStoreDistrict,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return LoadingWidget();
@@ -69,7 +69,7 @@ class _StoreSpecialtyTabState extends State<StoreSpecialtyTab> {
                     return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
-                          return StoreSpecialtyTile(
+                          return StoreDistrictTile(
                               snapshot.data[index], widget.store);
                         });
                 }),

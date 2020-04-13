@@ -1,22 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/specialty_list_bloc.dart';
+import 'package:onde_tem_saude_admin/blocs/district_list_bloc.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/loading_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/no_record_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/search_field.dart';
 
-class StoreSpecialtyPage extends StatefulWidget {
+class StoreDistrictPage extends StatefulWidget {
   final DocumentSnapshot store;
 
-  StoreSpecialtyPage({this.store});
+  StoreDistrictPage({this.store});
 
   @override
-  _StoreSpecialtyPageState createState() => _StoreSpecialtyPageState(store);
+  _StoreDistrictPageState createState() => _StoreDistrictPageState(store);
 }
 
-class _StoreSpecialtyPageState extends State<StoreSpecialtyPage> {
-  _StoreSpecialtyPageState(DocumentSnapshot store);
+class _StoreDistrictPageState extends State<StoreDistrictPage> {
+  _StoreDistrictPageState(DocumentSnapshot store);
 
   @override
   void initState() {
@@ -25,19 +25,50 @@ class _StoreSpecialtyPageState extends State<StoreSpecialtyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _tableBloc = SpecialtyListBloc(store: widget.store);
+    final _tableBloc = DistrictListBloc(store: widget.store);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Lista de Especialidades"),
+        title: Text("Lista de Bairros"),
         centerTitle: true,
       ),
       body: Column(
         children: <Widget>[
           SearchField(onChanged: _tableBloc.onChangedSearch),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  "CIDADE: ",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                FutureBuilder<DocumentSnapshot>(
+                  future: Firestore.instance
+                      .collection("cities")
+                      .document(widget.store.data["city"])
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData)
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    else {
+                      return Text(
+                        "${snapshot.data["name"]}",
+                        style: TextStyle(
+                            color: Colors.grey[850],
+                            fontWeight: FontWeight.w500),
+                      );
+                    }
+                  },
+                )
+              ],
+            ),
+          ),
           Expanded(
             child: StreamBuilder<List>(
-                stream: _tableBloc.outSpecialties,
+                stream: _tableBloc.outDistrict,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return LoadingWidget();
@@ -56,7 +87,7 @@ class _StoreSpecialtyPageState extends State<StoreSpecialtyPage> {
                                 child: ListTile(
                                   onTap: () {
                                     widget.store.reference
-                                        .collection("specialties")
+                                        .collection("districts")
                                         .document(snapshot
                                             .data[index].reference.documentID)
                                         .setData({
@@ -64,10 +95,10 @@ class _StoreSpecialtyPageState extends State<StoreSpecialtyPage> {
                                           .data[index].reference.documentID
                                     });
                                     Firestore.instance
-                                        .collection("store_specialty")
+                                        .collection("store_district")
                                         .add({
                                       "store": widget.store.documentID,
-                                      "specialty": snapshot
+                                      "district": snapshot
                                           .data[index].reference.documentID
                                     });
                                     Navigator.of(context).pop();

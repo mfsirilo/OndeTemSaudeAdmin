@@ -8,9 +8,13 @@ class DistrictListBloc extends BlocBase {
   Stream<List> get outDistrict => _districtController.stream;
 
   List<DocumentSnapshot> _districts = [];
-  final DocumentSnapshot city;
+  DocumentSnapshot city;
+  DocumentSnapshot store;
 
-  DistrictListBloc({this.city}) {
+  DistrictListBloc({
+    this.city,
+    this.store,
+  }) {
     _addListener();
   }
 
@@ -23,29 +27,66 @@ class DistrictListBloc extends BlocBase {
   }
 
   void _addListener() {
-    city.reference
-        .collection("districts")
-        .orderBy('name')
-        .snapshots()
-        .listen((snapshot) {
-      snapshot.documentChanges.forEach((change) {
-        String uid = change.document.documentID;
-
-        switch (change.type) {
-          case DocumentChangeType.added:
-            _districts.add(change.document);
-            break;
-          case DocumentChangeType.modified:
-            _districts.removeWhere((order) => order.documentID == uid);
-            _districts.add(change.document);
-            break;
-          case DocumentChangeType.removed:
-            _districts.removeWhere((order) => order.documentID == uid);
-            break;
+    if (store != null) {
+      store.reference.collection("districts").getDocuments().then((value) {
+        List<String> uidItems = [];
+        var docs = value.documents.toList();
+        for (DocumentSnapshot doc in docs) {
+          uidItems.add(doc.documentID);
         }
+
+        Firestore.instance
+            .collection("cities")
+            .document(store.data["city"])
+            .collection("districts")
+            .orderBy('name')
+            .snapshots()
+            .listen((snapshot) {
+          snapshot.documentChanges.forEach((change) {
+            String uid = change.document.documentID;
+            if (!uidItems.contains(uid)) {
+              switch (change.type) {
+                case DocumentChangeType.added:
+                  _districts.add(change.document);
+                  break;
+                case DocumentChangeType.modified:
+                  _districts.removeWhere((order) => order.documentID == uid);
+                  _districts.add(change.document);
+                  break;
+                case DocumentChangeType.removed:
+                  _districts.removeWhere((order) => order.documentID == uid);
+                  break;
+              }
+            }
+          });
+          _districtController.add(_districts);
+        });
       });
-      _districtController.add(_districts);
-    });
+    } else {
+      city.reference
+          .collection("districts")
+          .orderBy('name')
+          .snapshots()
+          .listen((snapshot) {
+        snapshot.documentChanges.forEach((change) {
+          String uid = change.document.documentID;
+
+          switch (change.type) {
+            case DocumentChangeType.added:
+              _districts.add(change.document);
+              break;
+            case DocumentChangeType.modified:
+              _districts.removeWhere((order) => order.documentID == uid);
+              _districts.add(change.document);
+              break;
+            case DocumentChangeType.removed:
+              _districts.removeWhere((order) => order.documentID == uid);
+              break;
+          }
+        });
+        _districtController.add(_districts);
+      });
+    }
   }
 
   List<DocumentSnapshot> _filter(String search) {

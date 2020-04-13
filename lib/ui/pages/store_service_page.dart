@@ -42,7 +42,7 @@ class _StoreServicePageState extends State<StoreServicePage> {
                   if (!snapshot.hasData)
                     return LoadingWidget();
                   else if (snapshot.data.length == 0)
-                    return NoRecordWidget();
+                    return NoRecordWidget(msg: "Todos os itens já vinculados.");
                   else
                     return ListView.builder(
                         itemCount: snapshot.data.length,

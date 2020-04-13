@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:onde_tem_saude_admin/ui/tabs/store_district_tab.dart';
 import 'package:onde_tem_saude_admin/ui/tabs/store_service_tab.dart';
 import 'package:onde_tem_saude_admin/ui/tabs/store_specialty_tab.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/active_widget.dart';
@@ -56,6 +57,13 @@ class StoreTile extends StatelessWidget {
                       Navigator.pop(context);
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => StorePage(
+                                store: document,
+                              )));
+                    }),
+                    buildRow("Adicionar Bairros Relacionados", () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => StoreDistrictTab(
                                 store: document,
                               )));
                     }),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class NoRecordWidget extends StatelessWidget {
-  const NoRecordWidget();
+  String msg;
+
+  NoRecordWidget({this.msg});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class NoRecordWidget extends StatelessWidget {
             height: 16.0,
           ),
           Text(
-            "Nenhum registro encontrado!",
+            (msg == null || msg.isEmpty) ? "Nenhum registro encontrado!" : msg,
             style: TextStyle(
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
