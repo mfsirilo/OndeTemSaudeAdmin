@@ -26,8 +26,9 @@ class ContactUsTab extends StatelessWidget {
             onPressed: () {
               _logout(context);
             },
-          )
+          ),
         ],
+
       ),
       body: StreamBuilder<List>(
           stream: _contactUsBloc.outContactUs,

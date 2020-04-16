@@ -5,6 +5,8 @@ import 'package:onde_tem_saude_admin/ui/tiles/user_tile.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/loading_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/no_record_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/search_field.dart';
+import 'package:onde_tem_saude_admin/ui/general/login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UsersTab extends StatelessWidget {
   @override
@@ -15,6 +17,18 @@ class UsersTab extends StatelessWidget {
       appBar: AppBar(
         title: Text("Usuários"),
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            tooltip: "Sair do App",
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              _logout(context);
+            },
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -37,6 +51,35 @@ class UsersTab extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+  void _logout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Sair?"),
+          content: new Text("Deseja realmente sair do aplicativo?"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("CANCELAR"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("SIM"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => LoginPage()));
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

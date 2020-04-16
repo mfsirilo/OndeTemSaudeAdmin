@@ -6,6 +6,8 @@ import 'package:onde_tem_saude_admin/ui/tiles/store_specialty_tile.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/loading_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/no_record_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/search_field.dart';
+import 'package:onde_tem_saude_admin/ui/general/login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class StoreSpecialtyTab extends StatefulWidget {
   final DocumentSnapshot store;
@@ -25,6 +27,18 @@ class _StoreSpecialtyTabState extends State<StoreSpecialtyTab> {
       appBar: AppBar(
         title: Text("Vincular Especialidades"),
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            tooltip: "Sair do App",
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              _logout(context);
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -76,6 +90,35 @@ class _StoreSpecialtyTabState extends State<StoreSpecialtyTab> {
           )
         ],
       ),
+    );
+  }
+  void _logout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Sair?"),
+          content: new Text("Deseja realmente sair do aplicativo?"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("CANCELAR"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("SIM"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => LoginPage()));
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

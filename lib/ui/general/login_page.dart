@@ -65,10 +65,10 @@ class _LoginPageState extends State<LoginPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
-                            Icon(
-                              Icons.store_mall_directory,
-                              color: Colors.green,
-                              size: 160,
+                            Image.asset(
+                                'images/logo_admin_192.png',
+                              width:200,
+                              height: 400,
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
