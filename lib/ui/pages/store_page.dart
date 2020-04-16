@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:onde_tem_saude_admin/blocs/store_bloc.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/images_widget.dart';
 
@@ -19,10 +18,6 @@ class _StorePageState extends State<StorePage> {
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  final _phone1Controller = MaskedTextController(mask: '(00) 0 0000-0000');
-  final _phone2Controller = MaskedTextController(mask: '(00) 0 0000-0000');
-  final _cepController = MaskedTextController(mask: '00.000-000');
 
   _StorePageState(DocumentSnapshot store)
       : _storeBloc = StoreBloc(store: store);
@@ -93,9 +88,6 @@ class _StorePageState extends State<StorePage> {
                   if (!snapshot.hasData) return Container();
                   selectedCity = snapshot.data["city"];
                   selectedDistrict = snapshot.data["district"];
-                  _phone1Controller.text = snapshot.data["phone1"];
-                  _phone2Controller.text = snapshot.data["phone2"];
-                  _cepController.text = snapshot.data["cep"];
 
                   return ListView(
                     padding: EdgeInsets.all(16),
@@ -147,7 +139,7 @@ class _StorePageState extends State<StorePage> {
                             child: Padding(
                               padding: const EdgeInsets.only(right: 6.0),
                               child: TextFormField(
-                                controller: _phone1Controller,
+                                initialValue: snapshot.data["phone1"],
                                 style: _fieldStyle,
                                 decoration: _buildDecoration("Telefone 1"),
                                 onSaved: _storeBloc.savePhone1,
@@ -160,7 +152,7 @@ class _StorePageState extends State<StorePage> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 6.0),
                               child: TextFormField(
-                                controller: _phone2Controller,
+                                initialValue: snapshot.data["phone2"],
                                 style: _fieldStyle,
                                 decoration: _buildDecoration("Telefone 2"),
                                 onSaved: _storeBloc.savePhone2,
@@ -190,7 +182,6 @@ class _StorePageState extends State<StorePage> {
                           StreamBuilder<QuerySnapshot>(
                               stream: Firestore.instance
                                   .collection("cities")
-                                  .where("active", isEqualTo: true)
                                   .snapshots(),
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData)
@@ -275,7 +266,6 @@ class _StorePageState extends State<StorePage> {
                                       .collection("cities")
                                       .document(selectedCity)
                                       .collection("districts")
-                                      .where("active", isEqualTo: true)
                                       .snapshots(),
                                   builder: (context, snapshot) {
                                     if (!snapshot.hasData)
@@ -345,7 +335,7 @@ class _StorePageState extends State<StorePage> {
                             child: Padding(
                               padding: const EdgeInsets.only(right: 6.0),
                               child: TextFormField(
-                                controller: _cepController,
+                                initialValue: snapshot.data["cep"],
                                 style: _fieldStyle,
                                 decoration: _buildDecoration("CEP"),
                                 onSaved: _storeBloc.saveCep,
