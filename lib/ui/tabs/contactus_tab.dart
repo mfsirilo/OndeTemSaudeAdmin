@@ -1,5 +1,7 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:onde_tem_saude_admin/ui/general/login_page.dart';
 import 'package:onde_tem_saude_admin/ui/tiles/contact_tile.dart';
 import 'package:onde_tem_saude_admin/blocs/contactus_bloc.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/loading_widget.dart';
@@ -14,6 +16,18 @@ class ContactUsTab extends StatelessWidget {
       appBar: AppBar(
         title: Text("Mensagens"),
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            tooltip: "Sair do App",
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              _logout(context);
+            },
+          )
+        ],
       ),
       body: StreamBuilder<List>(
           stream: _contactUsBloc.outContactUs,
@@ -29,6 +43,36 @@ class ContactUsTab extends StatelessWidget {
                     return ContactUsTile(snapshot.data[index]);
                   });
           }),
+    );
+  }
+
+  void _logout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Sair?"),
+          content: new Text("Deseja realmente sair do aplicativo?"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("CANCELAR"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("SIM"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => LoginPage()));
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
