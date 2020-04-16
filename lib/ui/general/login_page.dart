@@ -93,6 +93,8 @@ class _LoginPageState extends State<LoginPage> {
                                 obscure: true,
                                 stream: _loginBloc.outPassword,
                                 onChanged: _loginBloc.changePassword,
+                                onEditingComplete:
+                                    snapshot.hasData ? _loginBloc.submit : null,
                               ),
                             ),
                             SizedBox(
