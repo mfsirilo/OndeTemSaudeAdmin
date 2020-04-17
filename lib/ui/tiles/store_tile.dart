@@ -29,7 +29,7 @@ class StoreTile extends StatelessWidget {
             //  backgroundColor: Colors.transparent,
             //),
             title: Text(
-              document["title"],
+              document["title"].toUpperCase(),
               style: TextStyle(
                   color: Colors.grey[850], fontWeight: FontWeight.w500),
             ),

@@ -19,6 +19,7 @@ class StoreBloc extends BlocBase {
   StoreBloc({this.store}) {
     if (store != null) {
       unsavedData = Map.of(store.data);
+      unsavedData["images"] = List.of(store.data["images"]);
       _createdController.add(true);
     } else {
       unsavedData = {
