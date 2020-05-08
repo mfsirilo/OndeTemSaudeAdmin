@@ -139,9 +139,21 @@ class _SpecialtyPageState extends State<SpecialtyPage> {
             ),
             new FlatButton(
               child: new Text("SIM"),
-              onPressed: () {
-                _specialtyBloc.delete();
-                Navigator.of(context).pop();
+              onPressed: () async {
+                bool validation = await _specialtyBloc.verifyDelete();
+                if (validation) {
+                  _specialtyBloc.delete();
+                  Navigator.of(context).pop();
+                } else {
+                  _scaffoldKey.currentState.removeCurrentSnackBar();
+                  _scaffoldKey.currentState.showSnackBar(SnackBar(
+                    content: Text(
+                      "Falha ao deletar o registro possiu vínculos.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                  ));
+                }
                 Navigator.of(context).pop();
               },
             ),

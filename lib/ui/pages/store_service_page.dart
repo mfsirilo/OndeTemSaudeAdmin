@@ -63,6 +63,13 @@ class _StoreServicePageState extends State<StoreServicePage> {
                                       "uid": snapshot
                                           .data[index].reference.documentID
                                     });
+                                    Firestore.instance
+                                        .collection("store_service")
+                                        .add({
+                                      "store": widget.store.documentID,
+                                      "service": snapshot
+                                          .data[index].reference.documentID
+                                    });
                                     Navigator.of(context).pop();
                                   },
                                   contentPadding:

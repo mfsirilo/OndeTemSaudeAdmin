@@ -46,9 +46,8 @@ class DistrictBloc extends BlocBase {
       if (register != null) {
         await register.reference.updateData(unsavedData);
       } else {
-        DocumentReference dr = await city.reference
-            .collection("districts")
-            .add(unsavedData);
+        DocumentReference dr =
+            await city.reference.collection("districts").add(unsavedData);
         await dr.updateData(unsavedData);
       }
 
@@ -59,6 +58,30 @@ class DistrictBloc extends BlocBase {
       _loadingController.add(false);
       return false;
     }
+  }
+
+  Future<bool> verifyDelete() async {
+    QuerySnapshot relStores = await Firestore.instance
+        .collection("stores")
+        .where("district", isEqualTo: register.documentID)
+        .getDocuments();
+
+    QuerySnapshot relStoresDistrict = await Firestore.instance
+        .collection("store_district")
+        .where("district", isEqualTo: register.documentID)
+        .getDocuments();
+
+    QuerySnapshot relUsers = await Firestore.instance
+        .collection("users")
+        .where("district", isEqualTo: register.documentID)
+        .getDocuments();
+
+    if (relStores.documents.length == 0 &&
+        relUsers.documents.length == 0 &&
+        relStoresDistrict.documents.length == 0)
+      return true;
+    else
+      return false;
   }
 
   void delete() {

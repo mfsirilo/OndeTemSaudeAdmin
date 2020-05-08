@@ -21,7 +21,8 @@ class _DistrictPageState extends State<DistrictPage> {
   _DistrictPageState(DocumentSnapshot city, DocumentSnapshot district)
       : _districtBloc = DistrictBloc(city: city, register: district);
 
-  void _onChanged1(bool value) => setState(() => _districtBloc.saveActive(value));
+  void _onChanged1(bool value) =>
+      setState(() => _districtBloc.saveActive(value));
 
   @override
   void initState() {
@@ -158,9 +159,21 @@ class _DistrictPageState extends State<DistrictPage> {
             ),
             new FlatButton(
               child: new Text("SIM"),
-              onPressed: () {
-                _districtBloc.delete();
-                Navigator.of(context).pop();
+              onPressed: () async {
+                bool validation = await _districtBloc.verifyDelete();
+                if (validation) {
+                  _districtBloc.delete();
+                  Navigator.of(context).pop();
+                } else {
+                  _scaffoldKey.currentState.removeCurrentSnackBar();
+                  _scaffoldKey.currentState.showSnackBar(SnackBar(
+                    content: Text(
+                      "Falha ao deletar o registro possiu vínculos.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                  ));
+                }
                 Navigator.of(context).pop();
               },
             ),

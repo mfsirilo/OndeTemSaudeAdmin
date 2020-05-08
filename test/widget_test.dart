@@ -8,7 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:onde_tem_saude_admin/main.dart';
 import 'package:onde_tem_saude_admin/ui/general/my_app.dart';
 
 void main() {

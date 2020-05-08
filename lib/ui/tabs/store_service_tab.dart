@@ -83,7 +83,8 @@ class _StoreServiceTabState extends State<StoreServiceTab> {
                     return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
-                          return StoreServiceTile(snapshot.data[index]);
+                          return StoreServiceTile(
+                              snapshot.data[index], widget.store);
                         });
                 }),
           )
@@ -91,6 +92,7 @@ class _StoreServiceTabState extends State<StoreServiceTab> {
       ),
     );
   }
+
   void _logout(BuildContext context) {
     showDialog(
       context: context,

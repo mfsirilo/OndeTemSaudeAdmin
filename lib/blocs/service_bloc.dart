@@ -53,6 +53,18 @@ class ServiceBloc extends BlocBase {
     }
   }
 
+  Future<bool> verifyDelete() async {
+    QuerySnapshot relStores = await Firestore.instance
+        .collection("store_service")
+        .where("service", isEqualTo: register.documentID)
+        .getDocuments();
+
+    if (relStores.documents.length == 0)
+      return true;
+    else
+      return false;
+  }
+
   void delete() {
     register.reference.delete();
   }

@@ -137,9 +137,21 @@ class _ServicePageState extends State<ServicePage> {
             ),
             new FlatButton(
               child: new Text("SIM"),
-              onPressed: () {
-                _serviceBloc.delete();
-                Navigator.of(context).pop();
+              onPressed: () async {
+                bool validation = await _serviceBloc.verifyDelete();
+                if (validation) {
+                  _serviceBloc.delete();
+                  Navigator.of(context).pop();
+                } else {
+                  _scaffoldKey.currentState.removeCurrentSnackBar();
+                  _scaffoldKey.currentState.showSnackBar(SnackBar(
+                    content: Text(
+                      "Falha ao deletar o registro possiu vínculos.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                  ));
+                }
                 Navigator.of(context).pop();
               },
             ),

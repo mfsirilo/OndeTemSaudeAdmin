@@ -4,8 +4,9 @@ import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
 
 class StoreServiceTile extends StatelessWidget {
   final DocumentSnapshot document;
+  final DocumentSnapshot store;
 
-  StoreServiceTile(this.document);
+  StoreServiceTile(this.document, this.store);
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +66,19 @@ class StoreServiceTile extends StatelessWidget {
               child: new Text("SIM"),
               onPressed: () {
                 document.reference.delete();
+                Firestore.instance
+                    .collection("store_service")
+                    .where(
+                      "service",
+                      isEqualTo: document.documentID,
+                    )
+                    .where("store", isEqualTo: store.documentID)
+                    .getDocuments()
+                    .then((values) {
+                  for (DocumentSnapshot doc in values.documents) {
+                    doc.reference.delete();
+                  }
+                });
                 Navigator.of(context).pop();
               },
             ),
