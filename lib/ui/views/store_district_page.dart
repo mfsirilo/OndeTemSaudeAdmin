@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/district_list_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/district_list_bloc.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/loading_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/no_record_widget.dart';

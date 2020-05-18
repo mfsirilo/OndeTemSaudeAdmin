@@ -1,11 +1,11 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/contactus_bloc.dart';
-import 'package:onde_tem_saude_admin/blocs/city_list_bloc.dart';
-import 'package:onde_tem_saude_admin/blocs/service_list_bloc.dart';
-import 'package:onde_tem_saude_admin/blocs/specialty_list_bloc.dart';
-import 'package:onde_tem_saude_admin/blocs/store_list_bloc.dart';
-import 'package:onde_tem_saude_admin/blocs/user_list_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/contactus_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/city_list_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/service_list_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/specialty_list_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/store_list_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/user_list_bloc.dart';
 import 'package:onde_tem_saude_admin/globals.dart';
 import 'package:onde_tem_saude_admin/ui/pages/city_page.dart';
 import 'package:onde_tem_saude_admin/ui/pages/service_page.dart';

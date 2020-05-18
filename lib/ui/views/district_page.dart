@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/district_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/district_bloc.dart';
 
 class DistrictPage extends StatefulWidget {
   final DocumentSnapshot district;

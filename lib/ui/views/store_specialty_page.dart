@@ -1,22 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/service_list_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/specialty_list_bloc.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/loading_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/no_record_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/search_field.dart';
 
-class StoreServicePage extends StatefulWidget {
+class StoreSpecialtyPage extends StatefulWidget {
   final DocumentSnapshot store;
 
-  StoreServicePage({this.store});
+  StoreSpecialtyPage({this.store});
 
   @override
-  _StoreServicePageState createState() => _StoreServicePageState(store);
+  _StoreSpecialtyPageState createState() => _StoreSpecialtyPageState(store);
 }
 
-class _StoreServicePageState extends State<StoreServicePage> {
-  _StoreServicePageState(DocumentSnapshot store);
+class _StoreSpecialtyPageState extends State<StoreSpecialtyPage> {
+  _StoreSpecialtyPageState(DocumentSnapshot store);
 
   @override
   void initState() {
@@ -25,7 +25,7 @@ class _StoreServicePageState extends State<StoreServicePage> {
 
   @override
   Widget build(BuildContext context) {
-    final _tableBloc = ServiceListBloc(store: widget.store);
+    final _tableBloc = SpecialtyListBloc(store: widget.store);
 
     return Scaffold(
       appBar: AppBar(
@@ -37,7 +37,7 @@ class _StoreServicePageState extends State<StoreServicePage> {
           SearchField(onChanged: _tableBloc.onChangedSearch),
           Expanded(
             child: StreamBuilder<List>(
-                stream: _tableBloc.outService,
+                stream: _tableBloc.outSpecialties,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return LoadingWidget();
@@ -56,7 +56,7 @@ class _StoreServicePageState extends State<StoreServicePage> {
                                 child: ListTile(
                                   onTap: () {
                                     widget.store.reference
-                                        .collection("services")
+                                        .collection("specialties")
                                         .document(snapshot
                                             .data[index].reference.documentID)
                                         .setData({
@@ -64,10 +64,10 @@ class _StoreServicePageState extends State<StoreServicePage> {
                                           .data[index].reference.documentID
                                     });
                                     Firestore.instance
-                                        .collection("store_service")
+                                        .collection("store_specialty")
                                         .add({
                                       "store": widget.store.documentID,
-                                      "service": snapshot
+                                      "specialty": snapshot
                                           .data[index].reference.documentID
                                     });
                                     Navigator.of(context).pop();

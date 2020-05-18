@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/service_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/service_bloc.dart';
 
 class ServicePage extends StatefulWidget {
   final DocumentSnapshot service;

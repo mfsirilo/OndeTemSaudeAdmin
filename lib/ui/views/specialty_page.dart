@@ -1,26 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/city_bloc.dart';
+import 'package:onde_tem_saude_admin/controllers/specialty_bloc.dart';
 
-class CityPage extends StatefulWidget {
-  final DocumentSnapshot city;
+class SpecialtyPage extends StatefulWidget {
+  final DocumentSnapshot specialty;
 
-  CityPage({this.city});
+  SpecialtyPage({this.specialty});
 
   @override
-  _CityPageState createState() => _CityPageState(city);
+  _SpecialtyPageState createState() => _SpecialtyPageState(specialty);
 }
 
-class _CityPageState extends State<CityPage> {
-  final CityBloc _cityBloc;
+class _SpecialtyPageState extends State<SpecialtyPage> {
+  final SpecialtyBloc _specialtyBloc;
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  _CityPageState(DocumentSnapshot city)
-      : _cityBloc = CityBloc(register: city);
-
-  void _onChanged1(bool value) => setState(() => _cityBloc.saveActive(value));
+  _SpecialtyPageState(DocumentSnapshot specialty)
+      : _specialtyBloc = SpecialtyBloc(register: specialty);
 
   @override
   void initState() {
@@ -40,24 +38,26 @@ class _CityPageState extends State<CityPage> {
       appBar: AppBar(
         elevation: 0,
         title: StreamBuilder<bool>(
-            stream: _cityBloc.outCreated,
+            stream: _specialtyBloc.outCreated,
             initialData: false,
             builder: (context, snapshot) {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  Text(snapshot.data ? "Editar Cidade" : "Criar Cidade"),
+                  Text(snapshot.data
+                      ? "Editar Especialidade"
+                      : "Criar Especialidade"),
                 ],
               );
             }),
         actions: <Widget>[
           StreamBuilder<bool>(
-            stream: _cityBloc.outCreated,
+            stream: _specialtyBloc.outCreated,
             initialData: false,
             builder: (context, snapshot) {
               if (snapshot.data)
                 return StreamBuilder<bool>(
-                    stream: _cityBloc.outLoading,
+                    stream: _specialtyBloc.outLoading,
                     initialData: false,
                     builder: (context, snapshot) {
                       return IconButton(
@@ -74,7 +74,7 @@ class _CityPageState extends State<CityPage> {
             },
           ),
           StreamBuilder<bool>(
-              stream: _cityBloc.outLoading,
+              stream: _specialtyBloc.outLoading,
               initialData: false,
               builder: (context, snapshot) {
                 return IconButton(
@@ -89,35 +89,17 @@ class _CityPageState extends State<CityPage> {
           Form(
             key: _formKey,
             child: StreamBuilder<Map>(
-                stream: _cityBloc.outData,
+                stream: _specialtyBloc.outData,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return Container();
                   return ListView(
                     padding: EdgeInsets.all(16),
                     children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            "Ativa?",
-                            style: TextStyle(
-                                color: Colors.grey[650],
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          new Switch(
-                              value: snapshot.data["active"],
-                              onChanged: _onChanged1),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
                       TextFormField(
                         initialValue: snapshot.data["name"],
                         style: _fieldStyle,
                         decoration: _buildDecoration("Nome*"),
-                        onSaved: _cityBloc.saveName,
+                        onSaved: _specialtyBloc.saveName,
                         validator: validateTitle,
                       ),
                     ],
@@ -125,7 +107,7 @@ class _CityPageState extends State<CityPage> {
                 }),
           ),
           StreamBuilder<bool>(
-              stream: _cityBloc.outLoading,
+              stream: _specialtyBloc.outLoading,
               initialData: false,
               builder: (context, snapshot) {
                 return IgnorePointer(
@@ -147,7 +129,7 @@ class _CityPageState extends State<CityPage> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Deletar?"),
-          content: new Text("Deseja realmente deletar esta cidade?"),
+          content: new Text("Deseja realmente deletar esta especialidade?"),
           actions: <Widget>[
             new FlatButton(
               child: new Text("CANCELAR"),
@@ -157,9 +139,21 @@ class _CityPageState extends State<CityPage> {
             ),
             new FlatButton(
               child: new Text("SIM"),
-              onPressed: () {
-                _cityBloc.delete();
-                Navigator.of(context).pop();
+              onPressed: () async {
+                bool validation = await _specialtyBloc.verifyDelete();
+                if (validation) {
+                  _specialtyBloc.delete();
+                  Navigator.of(context).pop();
+                } else {
+                  _scaffoldKey.currentState.removeCurrentSnackBar();
+                  _scaffoldKey.currentState.showSnackBar(SnackBar(
+                    content: Text(
+                      "Falha ao deletar o registro possiu vínculos.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                  ));
+                }
                 Navigator.of(context).pop();
               },
             ),
@@ -170,7 +164,7 @@ class _CityPageState extends State<CityPage> {
   }
 
   String validateTitle(String text) {
-    if (text.isEmpty) return "Preencha o Nome da Cidade.";
+    if (text.isEmpty) return "Preencha o Nome da Especialidade.";
     return null;
   }
 
@@ -180,20 +174,22 @@ class _CityPageState extends State<CityPage> {
 
       _scaffoldKey.currentState.showSnackBar(SnackBar(
         content: Text(
-          "Salvando cidade...",
+          "Salvando Especialidade...",
           style: TextStyle(color: Colors.white),
         ),
         duration: Duration(minutes: 1),
         backgroundColor: Theme.of(context).primaryColor,
       ));
 
-      bool success = await _cityBloc.save();
+      bool success = await _specialtyBloc.save();
 
       _scaffoldKey.currentState.removeCurrentSnackBar();
 
       _scaffoldKey.currentState.showSnackBar(SnackBar(
         content: Text(
-          success ? "Cidade criada com sucesso!" : "Erro ao salvar a cidade!",
+          success
+              ? "Especialidade criada com sucesso!"
+              : "Erro ao salvar a Especialidade!",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: success ? Colors.green : Colors.red,

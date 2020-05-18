@@ -1,37 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:onde_tem_saude_admin/blocs/store_bloc.dart';
-import 'package:onde_tem_saude_admin/ui/widgets/images_widget.dart';
+import 'package:onde_tem_saude_admin/controllers/user_bloc.dart';
 
-class StorePage extends StatefulWidget {
-  final DocumentSnapshot store;
+import '../../globals.dart';
 
-  StorePage({this.store});
+class UserPage extends StatefulWidget {
+  final DocumentSnapshot user;
+
+  UserPage({this.user});
 
   @override
-  _StorePageState createState() => _StorePageState(store);
+  _UserPageState createState() => _UserPageState(user);
 }
 
-class _StorePageState extends State<StorePage> {
-  final StoreBloc _storeBloc;
-  var selectedCity, selectedDistrict;
-
-  final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+class _UserPageState extends State<UserPage> {
+  final UserBloc _userBloc;
+  var selectedCity, selectedDistrict, selectedType;
+  List<DropdownMenuItem> typeItems = [];
 
   final _phone1Controller = MaskedTextController(mask: '(00) 0 0000-0000');
   final _phone2Controller = MaskedTextController(mask: '(00) 0 0000-0000');
   final _cepController = MaskedTextController(mask: '00.000-000');
 
-  _StorePageState(DocumentSnapshot store)
-      : _storeBloc = StoreBloc(store: store);
+  final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _onChanged1(bool value) => setState(() => _storeBloc.saveActive(value));
+  _UserPageState(DocumentSnapshot user) : _userBloc = UserBloc(user: user);
+
+  void _onChanged1(bool value) => setState(() => _userBloc.saveActive(value));
 
   @override
   Widget build(BuildContext context) {
     final _fieldStyle = TextStyle(fontSize: 16);
+
+    typeItems = [];
+    typeItems.add(buildDropdownMenuItem("user", "Munícipe"));
+    typeItems.add(buildDropdownMenuItem("operator", "Operador"));
+    if (isAdmin) typeItems.add(buildDropdownMenuItem("admin", "Administrador"));
 
     InputDecoration _buildDecoration(String label) {
       return InputDecoration(labelText: label);
@@ -42,21 +48,19 @@ class _StorePageState extends State<StorePage> {
       appBar: AppBar(
         elevation: 0,
         title: StreamBuilder<bool>(
-            stream: _storeBloc.outCreated,
+            stream: _userBloc.outCreated,
             initialData: false,
             builder: (context, snapshot) {
-              return Text(snapshot.data
-                  ? "Editar Unidade de Saúde"
-                  : "Criar Unidade de Saúde");
+              return Text(snapshot.data ? "Editar Usuário" : "Criar Usuário");
             }),
         actions: <Widget>[
           StreamBuilder<bool>(
-            stream: _storeBloc.outCreated,
+            stream: _userBloc.outCreated,
             initialData: false,
             builder: (context, snapshot) {
               if (snapshot.data)
                 return StreamBuilder<bool>(
-                    stream: _storeBloc.outLoading,
+                    stream: _userBloc.outLoading,
                     initialData: false,
                     builder: (context, snapshot) {
                       return IconButton(
@@ -64,7 +68,7 @@ class _StorePageState extends State<StorePage> {
                         onPressed: snapshot.data
                             ? null
                             : () {
-                                _deleteStore(context);
+                                _deleteUser(context);
                               },
                       );
                     });
@@ -73,12 +77,12 @@ class _StorePageState extends State<StorePage> {
             },
           ),
           StreamBuilder<bool>(
-              stream: _storeBloc.outLoading,
+              stream: _userBloc.outLoading,
               initialData: false,
               builder: (context, snapshot) {
                 return IconButton(
                   icon: Icon(Icons.save),
-                  onPressed: snapshot.data ? null : saveStore,
+                  onPressed: snapshot.data ? null : saveUser,
                 );
               }),
         ],
@@ -88,11 +92,12 @@ class _StorePageState extends State<StorePage> {
           Form(
             key: _formKey,
             child: StreamBuilder<Map>(
-                stream: _storeBloc.outData,
+                stream: _userBloc.outData,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return Container();
                   selectedCity = snapshot.data["city"];
                   selectedDistrict = snapshot.data["district"];
+                  selectedType = snapshot.data["type"];
                   _phone1Controller.text = snapshot.data["phone1"];
                   _phone2Controller.text = snapshot.data["phone2"];
                   _cepController.text = snapshot.data["cep"];
@@ -104,7 +109,7 @@ class _StorePageState extends State<StorePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "Ativa?",
+                            "Ativo?",
                             style: TextStyle(
                                 color: Colors.grey[650],
                                 fontSize: 18.0,
@@ -115,31 +120,67 @@ class _StorePageState extends State<StorePage> {
                               onChanged: _onChanged1),
                         ],
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 26.0),
+                            child: Text(
+                              "Tipo:",
+                              style: TextStyle(
+                                  color: Colors.grey[650],
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 6.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  DropdownButton(
+                                    items: typeItems,
+                                    onChanged: (currencyValue) {
+                                      _userBloc.saveType(currencyValue);
+                                      setState(() {
+                                        selectedType = currencyValue;
+                                      });
+                                    },
+                                    value: selectedType,
+                                    isExpanded: true,
+                                    hint: Text(
+                                      "Selecione...",
+                                      style: TextStyle(
+                                          color: Colors.green,
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                       SizedBox(
                         height: 8,
                       ),
-                      Text(
-                        "Imagens",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      ImagesWidget(
-                        context: context,
-                        initialValue: snapshot.data["images"],
-                        onSaved: _storeBloc.saveImages,
-                      ),
                       TextFormField(
-                        initialValue: snapshot.data["title"],
+                        initialValue: snapshot.data["name"],
                         style: _fieldStyle,
-                        decoration: _buildDecoration("Título"),
-                        onSaved: _storeBloc.saveTitle,
+                        decoration: _buildDecoration("Nome: *"),
+                        onSaved: _userBloc.saveName,
                         validator: validateTitle,
                       ),
                       TextFormField(
-                        initialValue: snapshot.data["description"],
+                        initialValue: snapshot.data["email"],
                         style: _fieldStyle,
-                        maxLines: 2,
-                        decoration: _buildDecoration("Descrição"),
-                        onSaved: _storeBloc.saveDescription,
+                        decoration: _buildDecoration("E-mail: *"),
+                        onSaved: _userBloc.saveEmail,
+                        validator: validateEmail,
                       ),
                       Row(
                         children: <Widget>[
@@ -149,8 +190,8 @@ class _StorePageState extends State<StorePage> {
                               child: TextFormField(
                                 controller: _phone1Controller,
                                 style: _fieldStyle,
-                                decoration: _buildDecoration("Telefone 1"),
-                                onSaved: _storeBloc.savePhone1,
+                                decoration: _buildDecoration("Telefone 1: *"),
+                                onSaved: _userBloc.savePhone1,
                                 keyboardType: TextInputType.number,
                                 validator: validatePhone,
                               ),
@@ -163,7 +204,7 @@ class _StorePageState extends State<StorePage> {
                                 controller: _phone2Controller,
                                 style: _fieldStyle,
                                 decoration: _buildDecoration("Telefone 2"),
-                                onSaved: _storeBloc.savePhone2,
+                                onSaved: _userBloc.savePhone2,
                                 keyboardType: TextInputType.number,
                               ),
                             ),
@@ -177,8 +218,8 @@ class _StorePageState extends State<StorePage> {
                         initialValue: snapshot.data["address"],
                         style: _fieldStyle,
                         maxLines: 2,
-                        decoration: _buildDecoration("Endereço"),
-                        onSaved: _storeBloc.saveAddress,
+                        decoration: _buildDecoration("Endereço: *"),
+                        onSaved: _userBloc.saveAddress,
                         validator: validateAddress,
                       ),
                       SizedBox(
@@ -231,8 +272,7 @@ class _StorePageState extends State<StorePage> {
                                           DropdownButton(
                                             items: currencyItems,
                                             onChanged: (currencyValue) {
-                                              _storeBloc
-                                                  .saveCity(currencyValue);
+                                              _userBloc.saveCity(currencyValue);
                                               setState(() {
                                                 selectedCity = currencyValue;
                                               });
@@ -316,7 +356,7 @@ class _StorePageState extends State<StorePage> {
                                               DropdownButton(
                                                 items: currencyItems,
                                                 onChanged: (currencyValue) {
-                                                  _storeBloc.saveDistrict(
+                                                  _userBloc.saveDistrict(
                                                       currencyValue);
                                                   setState(() {
                                                     selectedDistrict =
@@ -348,7 +388,7 @@ class _StorePageState extends State<StorePage> {
                                 controller: _cepController,
                                 style: _fieldStyle,
                                 decoration: _buildDecoration("CEP"),
-                                onSaved: _storeBloc.saveCep,
+                                onSaved: _userBloc.saveCep,
                                 keyboardType: TextInputType.number,
                               ),
                             ),
@@ -366,49 +406,12 @@ class _StorePageState extends State<StorePage> {
                           ))
                         ],
                       ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 6.0),
-                              child: TextFormField(
-                                initialValue:
-                                    snapshot.data["latitude"].toString(),
-                                style: _fieldStyle,
-                                decoration: _buildDecoration("Latitude"),
-                                keyboardType: TextInputType.number,
-                                onSaved: (value) {
-                                  _storeBloc.saveLatitude(double.parse(value));
-                                },
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 6.0),
-                              child: TextFormField(
-                                initialValue:
-                                    snapshot.data["longitude"].toString(),
-                                style: _fieldStyle,
-                                decoration: _buildDecoration("Longitude"),
-                                keyboardType: TextInputType.number,
-                                onSaved: (value) {
-                                  _storeBloc.saveLongitude(double.parse(value));
-                                },
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
                     ],
                   );
                 }),
           ),
           StreamBuilder<bool>(
-              stream: _storeBloc.outLoading,
+              stream: _userBloc.outLoading,
               initialData: false,
               builder: (context, snapshot) {
                 return IgnorePointer(
@@ -423,14 +426,27 @@ class _StorePageState extends State<StorePage> {
     );
   }
 
-  void _deleteStore(BuildContext context) {
+  DropdownMenuItem buildDropdownMenuItem(String key, String value) {
+    return DropdownMenuItem(
+      child: Padding(
+        padding: EdgeInsets.only(left: 8.0, right: 8.0),
+        child: Text(
+          value,
+          style: TextStyle(color: Color(0xff11b719)),
+        ),
+      ),
+      value: key,
+    );
+  }
+
+  void _deleteUser(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Deletar?"),
-          content: new Text("Deseja realmente deletar esta Unidade de Saúde?"),
+          content: new Text("Deseja realmente deletar este Usuário?"),
           actions: <Widget>[
             new FlatButton(
               child: new Text("CANCELAR"),
@@ -441,7 +457,7 @@ class _StorePageState extends State<StorePage> {
             new FlatButton(
               child: new Text("SIM"),
               onPressed: () {
-                _storeBloc.deleteStore();
+                _userBloc.deleteUser();
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
@@ -452,56 +468,46 @@ class _StorePageState extends State<StorePage> {
     );
   }
 
-  String validateImages(List images) {
-    if (images.isEmpty) return "Adicione imagens da Unidade de Saúde.";
+  String validateTitle(String text) {
+    if (text.isEmpty) return "Preencha o nome do Usuário.";
     return null;
   }
 
-  String validateTitle(String text) {
-    if (text.isEmpty) return "Preencha o nome da Unidade de Saúde.";
+  String validateEmail(String text) {
+    if (text.isEmpty) return "Preencha o email do Usuário.";
+    if (!text.contains("@") || !text.contains(".")) return "E-mail inválido!";
     return null;
   }
 
   String validateAddress(String text) {
-    if (text.isEmpty) return "Preencha o endereço da Unidade de Saúde.";
+    if (text.isEmpty) return "Preencha o endereço do Usuário.";
     return null;
   }
 
   String validatePhone(String text) {
-    if (text.isEmpty) return "Preencha o telefone da Unidade de Saúde.";
+    if (text.isEmpty) return "Preencha o telefone do Usuário.";
     return null;
   }
 
-  String validateLatitude(String text) {
-    if (text.isEmpty) return "Preencha a Latitude da Unidade de Saúde.";
-    return null;
-  }
-
-  String validateLongitude(String text) {
-    if (text.isEmpty) return "Preencha a Longitude da Unidade de Saúde.";
-    return null;
-  }
-
-  void saveStore() async {
+  void saveUser() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
       _scaffoldKey.currentState.showSnackBar(SnackBar(
         content: Text(
-          "Salvando Unidade de Saúde...",
+          "Salvando usuário...",
           style: TextStyle(color: Colors.white),
         ),
         duration: Duration(minutes: 1),
         backgroundColor: Theme.of(context).primaryColor,
       ));
 
-      bool success = await _storeBloc.saveStore();
-
+      bool success = await _userBloc.saveUser();
       _scaffoldKey.currentState.removeCurrentSnackBar();
 
       _scaffoldKey.currentState.showSnackBar(SnackBar(
         content: Text(
-          success ? "Empresa salva!" : "Erro ao salvar a Unidade de Saúde!",
+          success ? "Usuário salvo!" : "Erro ao salvar o usuário!",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: success ? Colors.green : Colors.red,
