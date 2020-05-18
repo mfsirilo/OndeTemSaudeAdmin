@@ -1,9 +1,9 @@
-class ServiceModel {
+class SpecialtyModel {
   String name;
 
-  ServiceModel({this.name});
+  SpecialtyModel({this.name});
 
-  ServiceModel.fromJson(Map<String, dynamic> json) {
+  SpecialtyModel.fromJson(Map<String, dynamic> json) {
     name = json['name'];
   }
 

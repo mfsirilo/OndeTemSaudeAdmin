@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/ui/pages/user_page.dart';
+import 'package:onde_tem_saude_admin/ui/views/user_page.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/active_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
 
@@ -16,7 +16,17 @@ class UserTile extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 8),
         child: Card(
           child: ListTile(
-            onTap: () {
+            onTap: () async {
+              await Firestore.instance
+                  .collection("cities")
+                  .document(document.data["city"])
+                  .collection("districts")
+                  .document(document.data["district"])
+                  .get()
+                  .then((value) {
+                if (value.data == null) document.data["district"] = null;
+              });
+
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => UserPage(
                         user: document,
@@ -29,7 +39,7 @@ class UserTile extends StatelessWidget {
                   color: Colors.grey[850], fontWeight: FontWeight.w500),
             ),
             subtitle: Text(
-              document.data["email"],
+              document["email"],
             ),
             trailing: ActiveWidget(document["active"], true),
           ),

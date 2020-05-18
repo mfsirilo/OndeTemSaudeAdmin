@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NoRecordWidget extends StatelessWidget {
-  String msg;
+  final String msg;
 
   NoRecordWidget({this.msg});
 

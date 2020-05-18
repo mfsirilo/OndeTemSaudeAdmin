@@ -1,10 +1,10 @@
-class CityModel {
+class DistrictModel {
   String name;
   bool active;
 
-  CityModel({this.name, this.active});
+  DistrictModel({this.name, this.active});
 
-  CityModel.fromJson(Map<String, dynamic> json) {
+  DistrictModel.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     active = json['active'];
   }

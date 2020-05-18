@@ -37,6 +37,10 @@ class ContactUsBloc extends BlocBase {
     });
   }
 
+  Future<List<DocumentSnapshot>> getMessages() async {
+    return _contactUs;
+  }
+
   @override
   void dispose() {
     _contactUsController.close();

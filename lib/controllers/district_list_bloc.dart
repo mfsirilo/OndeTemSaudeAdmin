@@ -89,6 +89,10 @@ class DistrictListBloc extends BlocBase {
     }
   }
 
+  Future<List<DocumentSnapshot>> getDistricts() async {
+    return _districts;
+  }
+
   List<DocumentSnapshot> _filter(String search) {
     List<DocumentSnapshot> filteredItens = List.from(_districts.toList());
 

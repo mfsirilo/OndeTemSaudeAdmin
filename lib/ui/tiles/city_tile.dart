@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:onde_tem_saude_admin/ui/tabs/district_tab.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/active_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
-import 'package:onde_tem_saude_admin/ui/pages/city_page.dart';
+import 'package:onde_tem_saude_admin/ui/views/city_page.dart';
 
 class CityTile extends StatelessWidget {
   final DocumentSnapshot document;

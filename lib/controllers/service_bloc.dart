@@ -1,5 +1,6 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:onde_tem_saude_admin/models/service_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ServiceBloc extends BlocBase {
@@ -20,7 +21,7 @@ class ServiceBloc extends BlocBase {
       unsavedData = Map.of(register.data);
       _createdController.add(true);
     } else {
-      unsavedData = {"name": null};
+      unsavedData = ServiceModel.toDefaultJson();
       _createdController.add(false);
     }
 

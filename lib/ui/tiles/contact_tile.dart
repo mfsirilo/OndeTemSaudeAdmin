@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:onde_tem_saude_admin/ui/pages/contactus_page.dart';
+import 'package:onde_tem_saude_admin/ui/views/contactus_page.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
 
 class ContactUsTile extends StatelessWidget {

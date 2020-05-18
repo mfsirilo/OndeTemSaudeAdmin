@@ -1,6 +1,7 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:onde_tem_saude_admin/models/store_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class StoreBloc extends BlocBase {
@@ -22,22 +23,7 @@ class StoreBloc extends BlocBase {
       unsavedData["images"] = List.of(store.data["images"]);
       _createdController.add(true);
     } else {
-      unsavedData = {
-        "title": null,
-        "description": null,
-        "active": true,
-        "latitude": 0,
-        "longitude": 0,
-        "address": null,
-        "city": null,
-        "district": null,
-        "state": "GO",
-        "country": "Brasil",
-        "cep": null,
-        "phone1": null,
-        "phone2": null,
-        "images": [],
-      };
+      unsavedData = StoreModel.toDefaultJson();
       _createdController.add(false);
     }
 

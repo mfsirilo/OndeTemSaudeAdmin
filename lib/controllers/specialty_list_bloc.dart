@@ -85,6 +85,10 @@ class SpecialtyListBloc extends BlocBase {
     }
   }
 
+  Future<List<DocumentSnapshot>> getSpecialties() async {
+    return _specialties;
+  }
+
   List<DocumentSnapshot> _filter(String search) {
     List<DocumentSnapshot> filteredItens = List.from(_specialties.toList());
 

@@ -57,6 +57,24 @@ class UserListBloc extends BlocBase {
     });
   }
 
+  Future<List<DocumentSnapshot>> getUsers() async {
+    await Future.wait(_users.map((value) async {
+      var city = await Firestore.instance
+          .collection("cities")
+          .document(value.data["city"])
+          .get();
+      value.data["cidade"] = ", " + city.data["name"].toString();
+      var district = await city.reference
+          .collection("districts")
+          .document(value.data["district"])
+          .get();
+      if (district.data != null)
+        value.data["bairro"] = ", " + district.data["name"].toString();
+    }));
+
+    return _users;
+  }
+
   List<DocumentSnapshot> _filter(String search) {
     List<DocumentSnapshot> filteredUsers = List.from(_users.toList());
 

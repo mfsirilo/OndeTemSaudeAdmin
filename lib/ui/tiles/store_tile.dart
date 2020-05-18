@@ -5,7 +5,7 @@ import 'package:onde_tem_saude_admin/ui/tabs/store_service_tab.dart';
 import 'package:onde_tem_saude_admin/ui/tabs/store_specialty_tab.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/active_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
-import 'package:onde_tem_saude_admin/ui/pages/store_page.dart';
+import 'package:onde_tem_saude_admin/ui/views/store_page.dart';
 
 class StoreTile extends StatelessWidget {
   final DocumentSnapshot document;

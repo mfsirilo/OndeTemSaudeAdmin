@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/login_bloc.dart';
-import 'package:onde_tem_saude_admin/ui/pages/home_page.dart';
+import 'package:onde_tem_saude_admin/controllers/login_bloc.dart';
+import 'package:onde_tem_saude_admin/ui/views/home_page.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/input_field.dart';
 
 class LoginPage extends StatefulWidget {
@@ -66,8 +66,8 @@ class _LoginPageState extends State<LoginPage> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                             Image.asset(
-                                'images/logo_admin_192.png',
-                              width:200,
+                              'images/logo_admin_192.png',
+                              width: 200,
                               height: 400,
                             ),
                             Padding(

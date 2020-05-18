@@ -49,6 +49,10 @@ class CityListBloc extends BlocBase {
     });
   }
 
+  Future<List<DocumentSnapshot>> getCities() async {
+    return _cities;
+  }
+
   List<DocumentSnapshot> _filter(String search) {
     List<DocumentSnapshot> filteredItens = List.from(_cities.toList());
 

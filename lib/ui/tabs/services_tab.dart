@@ -1,12 +1,20 @@
+import 'dart:io';
+
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/blocs/service_list_bloc.dart';
+import 'package:flutter/services.dart';
+import 'package:onde_tem_saude_admin/controllers/service_list_bloc.dart';
 import 'package:onde_tem_saude_admin/ui/tiles/service_tile.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/loading_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/no_record_widget.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/search_field.dart';
 import 'package:onde_tem_saude_admin/ui/general/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pdf/pdf.dart';
+
+import 'package:pdf/widgets.dart' as pdfLib;
+import 'package:printing/printing.dart';
 
 class ServicesTab extends StatefulWidget {
   @override
@@ -22,17 +30,25 @@ class _ServicesTabState extends State<ServicesTab> {
       appBar: AppBar(
         title: Text("Serviços"),
         centerTitle: true,
+        leading: IconButton(
+          tooltip: "Sair do App",
+          icon: Icon(
+            Icons.exit_to_app,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            _logout(context);
+          },
+        ),
         actions: <Widget>[
           IconButton(
-            tooltip: "Sair do App",
+            tooltip: "Gerar PDF",
             icon: Icon(
-              Icons.exit_to_app,
+              Icons.picture_as_pdf,
               color: Colors.white,
             ),
-            onPressed: () {
-              _logout(context);
-            },
-          ),
+            onPressed: () => _generatePdfAndView(context, _tableBloc),
+          )
         ],
       ),
       body: Column(
@@ -58,6 +74,60 @@ class _ServicesTabState extends State<ServicesTab> {
       ),
     );
   }
+
+  _generatePdfAndView(context, ServiceListBloc tableBloc) async {
+    var users = await tableBloc.getServices();
+    final pdfLib.Document pdf = pdfLib.Document(deflate: zlib.encode);
+    PdfImage _logo = PdfImage.file(
+      pdf.document,
+      bytes: (await rootBundle.load('images/logo_72.png')).buffer.asUint8List(),
+    );
+
+    String data =
+        formatDate(DateTime.now(), [dd, '/', mm, '/', yyyy, ' ', HH, ':', nn]);
+
+    pdf.addPage(pdfLib.MultiPage(
+        pageFormat:
+            PdfPageFormat.letter.copyWith(marginBottom: 1.5 * PdfPageFormat.cm),
+        crossAxisAlignment: pdfLib.CrossAxisAlignment.start,
+        build: (context) => [
+              pdfLib.Header(
+                  level: 0,
+                  child: pdfLib.Row(
+                      mainAxisAlignment: pdfLib.MainAxisAlignment.spaceBetween,
+                      children: <pdfLib.Widget>[
+                        pdfLib.Column(
+                            crossAxisAlignment: pdfLib.CrossAxisAlignment.start,
+                            children: <pdfLib.Widget>[
+                              pdfLib.Text('Onde tem Saúde', textScaleFactor: 2),
+                              pdfLib.Text('Lista de Serviços',
+                                  textScaleFactor: 1.5),
+                              pdfLib.Text('Data: $data.', textScaleFactor: 1),
+                            ]),
+                        pdfLib.Image(_logo)
+                      ])),
+              pdfLib.Table.fromTextArray(context: context, data: <List<String>>[
+                <String>["Nome"],
+                ...users.map((item) {
+                  return [
+                    item.data["name"],
+                  ];
+                })
+              ])
+            ]));
+
+//    final String dir = (await getApplicationDocumentsDirectory()).path;
+//    final String path = '$dir/especialidades.pdf';
+//    final File file = File(path);
+//    file.writeAsBytesSync(pdf.save());
+
+    Printing.layoutPdf(
+      onLayout: (pageFormat) {
+        return pdf.save();
+      },
+    );
+  }
+
   void _logout(BuildContext context) {
     showDialog(
       context: context,

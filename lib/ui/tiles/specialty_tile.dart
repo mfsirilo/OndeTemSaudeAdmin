@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:onde_tem_saude_admin/ui/pages/specialty_page.dart';
+import 'package:onde_tem_saude_admin/ui/views/specialty_page.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/default_shimmer.dart';
 
 class SpecialtyTile extends StatelessWidget {

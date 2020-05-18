@@ -49,6 +49,25 @@ class StoreListBloc extends BlocBase {
     });
   }
 
+  Future<List<DocumentSnapshot>> getStores() async {
+    await Future.wait(_stores.map((value) async {
+      var city = await Firestore.instance
+          .collection("cities")
+          .document(value.data["city"])
+          .get();
+      if (city.data != null) {
+        value.data["cidade"] = city.data["name"];
+        var district = await city.reference
+            .collection("districts")
+            .document(value.data["district"])
+            .get();
+        if (district.data != null) value.data["bairro"] = district.data["name"];
+      }
+    }));
+
+    return _stores;
+  }
+
   List<DocumentSnapshot> _filter(String search) {
     List<DocumentSnapshot> filteredStores = List.from(_stores.toList());
 

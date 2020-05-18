@@ -1,6 +1,7 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:onde_tem_saude_admin/models/user_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class UserBloc extends BlocBase {
@@ -25,20 +26,7 @@ class UserBloc extends BlocBase {
       unsavedData = Map.of(user.data);
       _createdController.add(true);
     } else {
-      unsavedData = {
-        "name": null,
-        "email": null,
-        "state": "GO",
-        "country": "Brasil",
-        "address": null,
-        "city": null,
-        "district": null,
-        "cep": null,
-        "phone1": null,
-        "phone2": null,
-        "active": true,
-        "type": "user"
-      };
+      unsavedData = UserModel.toDefaultJson();
       _createdController.add(false);
     }
 

@@ -85,6 +85,10 @@ class ServiceListBloc extends BlocBase {
     }
   }
 
+  Future<List<DocumentSnapshot>> getServices() async {
+    return _services;
+  }
+
   List<DocumentSnapshot> _filter(String search) {
     List<DocumentSnapshot> filteredItens = List.from(_services.toList());
 

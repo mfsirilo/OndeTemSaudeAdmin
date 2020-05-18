@@ -96,7 +96,8 @@ class _UserPageState extends State<UserPage> {
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return Container();
                   selectedCity = snapshot.data["city"];
-                  selectedDistrict = snapshot.data["district"];
+                  if (snapshot.data["district"] != null)
+                    selectedDistrict = snapshot.data["district"];
                   selectedType = snapshot.data["type"];
                   _phone1Controller.text = snapshot.data["phone1"];
                   _phone2Controller.text = snapshot.data["phone2"];
