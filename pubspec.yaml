@@ -42,8 +42,10 @@ dependencies:
   date_format: ^1.0.8
 
 dev_dependencies:
-  flutter_test:
+  flutter_driver:
     sdk: flutter
+  test:
+  mockito:
 
 
 # For information on the generic Dart part of this file, see the
