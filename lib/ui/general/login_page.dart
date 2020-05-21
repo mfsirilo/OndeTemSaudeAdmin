@@ -26,9 +26,9 @@ class _LoginPageState extends State<LoginPage> {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                    title: Text("Erro!"),
+                    title: Text("Error..."),
                     content:
-                        Text("Você não possui os privilégios necessários. Entre em contato com o administrador"),
+                        Text("Você não possui os privilégios necessários."),
                   ));
           break;
         case LoginState.IDLE:
