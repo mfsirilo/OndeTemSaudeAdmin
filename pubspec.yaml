@@ -43,10 +43,8 @@ dependencies:
   test: ^1.14.3
 
 dev_dependencies:
-  flutter_driver:
+  flutter_test:
     sdk: flutter
-  test:
-  mockito:
 
 
 
