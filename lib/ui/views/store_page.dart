@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:onde_tem_saude_admin/controllers/store_bloc.dart';
 import 'package:onde_tem_saude_admin/ui/widgets/images_widget.dart';
+import 'package:onde_tem_saude_admin/ui/widgets/search_field.dart';
 
 class StorePage extends StatefulWidget {
   final DocumentSnapshot store;
@@ -20,7 +21,7 @@ class _StorePageState extends State<StorePage> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final _phone1Controller = MaskedTextController(mask: '(00) 0 0000-0000');
+  final _phone1Controller = MaskedTextController(mask: '(00) 0000-0000');
   final _phone2Controller = MaskedTextController(mask: '(00) 0 0000-0000');
   final _cepController = MaskedTextController(mask: '00.000-000');
 
@@ -274,7 +275,7 @@ class _StorePageState extends State<StorePage> {
                                   stream: Firestore.instance
                                       .collection("cities")
                                       .document(selectedCity)
-                                      .collection("districts")
+                                      .collection("districts").orderBy("name",descending: false)
                                       .where("active", isEqualTo: true)
                                       .snapshots(),
                                   builder: (context, snapshot) {
